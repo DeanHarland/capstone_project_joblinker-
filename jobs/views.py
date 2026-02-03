@@ -1,12 +1,33 @@
 from django.shortcuts import render, redirect
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, View
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.views import LoginView as DjangoLoginView, LogoutView as DjangoLogoutView
 from django.urls import reverse_lazy
 from django.contrib import messages
-from .models import Job, Application
-from .forms import JobForm, ApplicationForm
+from .models import Job, Application, Profile
+from .forms import JobForm, ApplicationForm, CustomUserCreationForm
+
+
+class CustomLoginView(DjangoLoginView):
+    template_name = 'auth/login.html'
+    
+    def get_success_url(self):
+        """Redirect based on user role"""
+        user = self.request.user
+        try:
+            profile = Profile.objects.get(user=user)
+            if profile.role == 'employer':
+                return reverse_lazy('employer-dashboard')
+            else:
+                return reverse_lazy('job-list')
+        except Profile.DoesNotExist:
+            return reverse_lazy('job-list')
+
+
+class CustomLogoutView(DjangoLogoutView):
+    next_page = reverse_lazy('job-list')
 
 
 class JobListView(ListView):
@@ -46,7 +67,7 @@ class JobDetailView(DetailView):
         return context
 
 
-class JobCreateView(LoginRequiredMixin, CreateView):
+class JobCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = Job
     form_class = JobForm
     template_name = 'jobs/job_form.html'
@@ -57,6 +78,8 @@ class JobCreateView(LoginRequiredMixin, CreateView):
         context = super().get_context_data(**kwargs)
         context['title'] = 'Create New Job'
         return context
+    def test_func(self):
+        return self.request.user.profile.role == 'employer'
 
 
 class JobUpdateView(LoginRequiredMixin, UpdateView):
@@ -109,7 +132,7 @@ class ApplicationCreateView(LoginRequiredMixin, CreateView):
 
 
 class SignUpView(CreateView):
-    form_class = UserCreationForm
+    form_class = CustomUserCreationForm
     template_name = 'auth/signup.html'
     success_url = reverse_lazy('login')
     
@@ -117,4 +140,29 @@ class SignUpView(CreateView):
         response = super().form_valid(form)
         messages.success(self.request, 'Account created successfully! Please log in.')
         return response
+
+
+class EmployerDashboardView(LoginRequiredMixin, View):
+    """Dashboard for employers to manage their job postings"""
+    login_url = reverse_lazy('login')
+    
+    def get(self, request):
+        try:
+            profile = Profile.objects.get(user=request.user)
+            if profile.role != 'employer':
+                messages.error(request, 'Only employers can access this page.')
+                return redirect('job-list')
+        except Profile.DoesNotExist:
+            messages.error(request, 'Profile not found.')
+            return redirect('job-list')
+        
+        # Get all jobs posted by this employer
+        jobs = Job.objects.filter(posted_by=request.user)
+        
+        context = {
+            'jobs': jobs,
+            'total_jobs': jobs.count(),
+            'total_applications': Application.objects.filter(job__posted_by=request.user).count(),
+        }
+        return render(request, 'jobs/employer_dashboard.html', context)
 

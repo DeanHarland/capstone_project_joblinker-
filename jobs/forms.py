@@ -1,5 +1,43 @@
 from django import forms
-from .models import Job, Application
+from django.contrib.auth.models import User
+from django.contrib.auth.forms import UserCreationForm
+from .models import Job, Application, Profile
+
+
+class CustomUserCreationForm(UserCreationForm):
+    email = forms.EmailField(required=True)
+    role = forms.ChoiceField(
+        choices=Profile.ROLE_CHOICES,
+        widget=forms.RadioSelect,
+        label='Select your role'
+    )
+    
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'password1', 'password2', 'role']
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['username'].widget.attrs.update({'class': 'form-control'})
+        self.fields['email'].widget.attrs.update({'class': 'form-control'})
+        self.fields['password1'].widget.attrs.update({'class': 'form-control'})
+        self.fields['password2'].widget.attrs.update({'class': 'form-control'})
+        self.fields['role'].widget.attrs.update({'class': 'form-check-input'})
+    
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if User.objects.filter(email=email).exists():
+            raise forms.ValidationError("Email already registered.")
+        return email
+    
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.email = self.cleaned_data['email']
+        if commit:
+            user.save()
+            # Create profile with selected role
+            Profile.objects.create(user=user, role=self.cleaned_data['role'])
+        return user
 
 
 class JobForm(forms.ModelForm):

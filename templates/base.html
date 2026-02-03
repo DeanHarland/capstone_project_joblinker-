@@ -35,12 +35,18 @@
                         <a class="nav-link" href="{% url 'job-list' %}">Browse Jobs</a>
                     </li>
                     {% if user.is_authenticated %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'job-create' %}">Post Job</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">My Applications</a>
-                        </li>
+                        {% if user.profile.role == 'employer' %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'employer-dashboard' %}">Dashboard</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'job-create' %}">Post Job</a>
+                            </li>
+                        {% else %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="#">My Applications</a>
+                            </li>
+                        {% endif %}
                         <li class="nav-item">
                             <span class="nav-link">{{ user.username }}</span>
                         </li>
@@ -69,6 +75,22 @@
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             {% endfor %}
+        {% endif %}
+    </div>
+
+    <!-- Welcome Section -->
+    <div class="container mt-2 mb-3">
+        {% if user.is_authenticated %}
+            <div class="alert alert-info" role="alert">
+                <p class="mb-0">Welcome, <strong>{{ user.username }}</strong> <span class="badge bg-primary">{{ user.profile.role|title }}</span></p>
+            </div>
+        {% else %}
+            <div class="alert alert-light border" role="alert">
+                <p class="mb-0">
+                    <a href="{% url 'login' %}" class="btn btn-sm btn-primary">Login</a>
+                    <a href="{% url 'signup' %}" class="btn btn-sm btn-success">Register</a>
+                </p>
+            </div>
         {% endif %}
     </div>
 

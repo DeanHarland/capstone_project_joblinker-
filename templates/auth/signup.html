@@ -22,6 +22,15 @@
                         {% endif %}
                     </div>
                     <div class="mb-3">
+                        <label for="id_email" class="form-label">Email</label>
+                        {{ form.email }}
+                        {% if form.email.errors %}
+                            <div class="alert alert-danger mt-1 mb-0">
+                                {{ form.email.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="mb-3">
                         <label for="id_password1" class="form-label">Password</label>
                         {{ form.password1 }}
                         {% if form.password1.errors %}
@@ -41,6 +50,23 @@
                         {% if form.password2.errors %}
                             <div class="alert alert-danger mt-1 mb-0">
                                 {{ form.password2.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">{{ form.role.label }}</label>
+                        <div class="form-check">
+                            {% for value, label in form.role.field.choices %}
+                                <input type="radio" name="role" value="{{ value }}" id="id_role_{{ forloop.counter }}" class="form-check-input" required>
+                                <label class="form-check-label" for="id_role_{{ forloop.counter }}">
+                                    {{ label }}
+                                </label>
+                                <br>
+                            {% endfor %}
+                        </div>
+                        {% if form.role.errors %}
+                            <div class="alert alert-danger mt-1 mb-0">
+                                {{ form.role.errors }}
                             </div>
                         {% endif %}
                     </div>

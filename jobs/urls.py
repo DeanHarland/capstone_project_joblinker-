@@ -14,7 +14,10 @@ urlpatterns = [
     path('apply/', views.ApplicationCreateView.as_view(), name='application-create'),
     
     # Authentication URLs
-    path('login/', LoginView.as_view(template_name='auth/login.html'), name='login'),
-    path('logout/', LogoutView.as_view(next_page='job-list'), name='logout'),
+    path('login/', views.CustomLoginView.as_view(), name='login'),
+    path('logout/', views.CustomLogoutView.as_view(), name='logout'),
     path('signup/', views.SignUpView.as_view(), name='signup'),
+    
+    # Employer URLs
+    path('employer/dashboard/', views.EmployerDashboardView.as_view(), name='employer-dashboard'),
 ]

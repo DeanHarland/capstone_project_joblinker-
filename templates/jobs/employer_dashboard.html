@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+
+{% block title %}Employer Dashboard - JobLinker{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Employer Dashboard</h1>
+    
+    <!-- Statistics -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Active Jobs</h5>
+                    <h2 class="text-primary">{{ total_jobs }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Applications</h5>
+                    <h2 class="text-success">{{ total_applications }}</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="mb-4">
+        <a href="{% url 'job-create' %}" class="btn btn-primary btn-lg">Post New Job</a>
+    </div>
+
+    <!-- Jobs List -->
+    <h2>Your Job Postings</h2>
+    {% if jobs %}
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Job Title</th>
+                        <th>Company</th>
+                        <th>Location</th>
+                        <th>Posted Date</th>
+                        <th>Applications</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for job in jobs %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'job-detail' job.pk %}">{{ job.title }}</a>
+                            </td>
+                            <td>{{ job.company }}</td>
+                            <td>{{ job.location }}</td>
+                            <td>{{ job.created_at|date:"M d, Y" }}</td>
+                            <td>
+                                <span class="badge bg-info">{{ job.applications.count }}</span>
+                            </td>
+                            <td>
+                                <a href="{% url 'job-update' job.pk %}" class="btn btn-sm btn-warning">Edit</a>
+                                <a href="{% url 'job-delete' job.pk %}" class="btn btn-sm btn-danger">Delete</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="alert alert-info">
+            <p>You haven't posted any jobs yet. <a href="{% url 'job-create' %}">Post your first job</a></p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
