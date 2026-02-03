@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Job Listings</h1>
+
+<ul>
+  {% for job in object_list %}
+    <li>
+      <a href="{% url 'job-detail' job.pk %}">{{ job.title }} - {{ job.company }}</a>
+    </li>
+  {% empty %}
+    <li>No jobs available.</li>
+  {% endfor %}
+</ul>
+
+<a href="{% url 'job-create' %}">Create New Job</a>
+{% endblock %}

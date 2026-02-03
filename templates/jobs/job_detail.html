@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ job.title }} - JobLinker{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <h1>{{ job.title }}</h1>
+        <h4 class="text-muted">{{ job.company }}</h4>
+        
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <strong>Location:</strong> {{ job.location }}
+                    </div>
+                    {% if job.salary %}
+                        <div class="col-md-6">
+                            <strong>Salary:</strong> ${{ job.salary }}
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <small class="text-muted">Posted {{ job.created_at|date:"M d, Y g:i A" }}</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5>Job Description</h5>
+            </div>
+            <div class="card-body">
+                <p>{{ job.description|linebreaks }}</p>
+            </div>
+        </div>
+
+        <div class="mb-4">
+            {% if user.is_authenticated %}
+                {% if has_applied %}
+                    <div class="alert alert-info">
+                        <strong>You have already applied to this job</strong>
+                    </div>
+                {% else %}
+                    <form method="post" action="{% url 'application-create' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="job_id" value="{{ job.pk }}">
+                        <button type="submit" class="btn btn-success btn-lg">Apply Now</button>
+                    </form>
+                {% endif %}
+            {% else %}
+                <div class="alert alert-warning">
+                    <p><a href="{% url 'login' %}">Login</a> to apply for this job</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5>Job Actions</h5>
+            </div>
+            <div class="card-body">
+                <a href="{% url 'job-list' %}" class="btn btn-secondary d-block mb-2">Back to Jobs</a>
+                <a href="{% url 'job-update' job.pk %}" class="btn btn-warning d-block mb-2">Edit Job</a>
+                <a href="{% url 'job-delete' job.pk %}" class="btn btn-danger d-block">Delete Job</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

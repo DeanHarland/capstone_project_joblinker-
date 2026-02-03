@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+
+{% block title %}Jobs - JobLinker{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h1>Browse Jobs</h1>
+    </div>
+    <div class="col-md-4">
+        <form method="get" class="input-group">
+            <input type="text" name="search" class="form-control" placeholder="Search jobs..." value="{{ request.GET.search }}">
+            <button type="submit" class="btn btn-primary">Search</button>
+        </form>
+    </div>
+</div>
+
+{% if jobs %}
+    <div class="row">
+        {% for job in jobs %}
+            <div class="col-md-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ job.title }}</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">{{ job.company }}</h6>
+                        <p class="card-text">{{ job.description|truncatewords:20 }}</p>
+                        <div class="mb-2">
+                            <small class="text-muted">
+                                <strong>Location:</strong> {{ job.location }}
+                            </small>
+                        </div>
+                        {% if job.salary %}
+                            <div class="mb-2">
+                                <small class="text-muted">
+                                    <strong>Salary:</strong> ${{ job.salary }}
+                                </small>
+                            </div>
+                        {% endif %}
+                        <small class="text-muted">Posted {{ job.created_at|date:"M d, Y" }}</small>
+                    </div>
+                    <div class="card-footer bg-white">
+                        <a href="{% url 'job-detail' job.pk %}" class="btn btn-primary btn-sm">View Details</a>
+                        <a href="{% url 'job-update' job.pk %}" class="btn btn-warning btn-sm">Edit</a>
+                        <a href="{% url 'job-delete' job.pk %}" class="btn btn-danger btn-sm">Delete</a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    <nav aria-label="Page navigation" class="mt-4">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page=1">First</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                </li>
+            {% endif %}
+
+            {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                    <li class="page-item active">
+                        <span class="page-link">{{ num }}</span>
+                    </li>
+                {% else %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                    </li>
+                {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+{% else %}
+    <div class="alert alert-info text-center">
+        <h5>No jobs found</h5>
+        <p>Try adjusting your search or check back later for new opportunities.</p>
+    </div>
+{% endif %}
+{% endblock %}
