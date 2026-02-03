@@ -88,11 +88,18 @@ class JobCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
         context = super().get_context_data(**kwargs)
         context['title'] = 'Create New Job'
         return context
+
     def test_func(self):
         return self.request.user.profile.role == 'employer'
 
+    def form_valid(self, form):
+        form.instance.posted_by = self.request.user
+        response = super().form_valid(form)
+        messages.success(self.request, 'Job created successfully!')
+        return response
 
-class JobUpdateView(LoginRequiredMixin, UpdateView):
+
+class JobUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Job
     form_class = JobForm
     template_name = 'jobs/job_form.html'
@@ -103,18 +110,30 @@ class JobUpdateView(LoginRequiredMixin, UpdateView):
         context = super().get_context_data(**kwargs)
         context['title'] = 'Update Job'
         return context
+
+    def test_func(self):
+        return (
+            self.request.user.profile.role == 'employer'
+            and self.get_object().posted_by == self.request.user
+        )
     
     def form_valid(self, form):
         messages.success(self.request, 'Job updated successfully!')
         return super().form_valid(form)
 
 
-class JobDeleteView(LoginRequiredMixin, DeleteView):
+class JobDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Job
     template_name = 'jobs/job_confirm_delete.html'
     success_url = reverse_lazy('job-list')
     login_url = reverse_lazy('login')
     context_object_name = 'job'
+
+    def test_func(self):
+        return (
+            self.request.user.profile.role == 'employer'
+            and self.get_object().posted_by == self.request.user
+        )
     
     def delete(self, request, *args, **kwargs):
         messages.success(self.request, 'Job deleted successfully!')
