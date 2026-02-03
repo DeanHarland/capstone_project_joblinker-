@@ -8,7 +8,17 @@ from django.urls import reverse_lazy
 from django.contrib import messages
 from .models import Job, Application, Profile
 from .forms import JobForm, ApplicationForm, CustomUserCreationForm
+from django.contrib import messages
 
+class JobCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
+    model = Job
+    form_class = JobForm
+    template_name = "jobs/job_form.html"
+    success_url = reverse_lazy('job-list')
+
+    def form_valid(self, form):
+        messages.success(self.request, "Job created successfully!")
+        return super().form_valid(form)
 
 class CustomLoginView(DjangoLoginView):
     template_name = 'auth/login.html'
@@ -93,6 +103,10 @@ class JobUpdateView(LoginRequiredMixin, UpdateView):
         context = super().get_context_data(**kwargs)
         context['title'] = 'Update Job'
         return context
+    
+    def form_valid(self, form):
+        messages.success(self.request, 'Job updated successfully!')
+        return super().form_valid(form)
 
 
 class JobDeleteView(LoginRequiredMixin, DeleteView):
@@ -101,6 +115,10 @@ class JobDeleteView(LoginRequiredMixin, DeleteView):
     success_url = reverse_lazy('job-list')
     login_url = reverse_lazy('login')
     context_object_name = 'job'
+    
+    def delete(self, request, *args, **kwargs):
+        messages.success(self.request, 'Job deleted successfully!')
+        return super().delete(request, *args, **kwargs)
 
 
 class ApplicationCreateView(LoginRequiredMixin, CreateView):
