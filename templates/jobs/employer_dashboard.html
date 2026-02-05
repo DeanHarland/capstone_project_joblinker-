@@ -24,7 +24,63 @@
                 </div>
             </div>
         </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">New Notifications</h5>
+                    <h2 class="text-warning">
+                        {{ unread_notifications_count }}
+                        {% if unread_notifications_count > 0 %}
+                            <span class="badge bg-danger">!</span>
+                        {% endif %}
+                    </h2>
+                </div>
+            </div>
+        </div>
     </div>
+
+    <!-- Unread Notifications Alert -->
+    {% if unread_notifications_count > 0 %}
+        <div class="alert alert-info alert-dismissible fade show" role="alert">
+            <strong>New Applications!</strong> You have {{ unread_notifications_count }} unread notification{{ unread_notifications_count|pluralize }}.
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endif %}
+
+    <!-- Recent Notifications -->
+    {% if notifications %}
+        <div class="card mb-4">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">Recent Notifications</h5>
+            </div>
+            <div class="card-body">
+                <div class="list-group">
+                    {% for notification in notifications %}
+                        <div class="list-group-item {% if not notification.is_read %}list-group-item-light{% endif %}">
+                            <div class="d-flex w-100 justify-content-between align-items-center">
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-1">
+                                        <strong>{{ notification.application.applicant.first_name }} {{ notification.application.applicant.last_name }}</strong> 
+                                        applied for 
+                                        <strong>{{ notification.application.job.title }}</strong>
+                                    </h6>
+                                    <small class="text-muted">{{ notification.created_at|date:"M d, Y \a\t g:i A" }}</small>
+                                </div>
+                                <div>
+                                    {% if not notification.is_read %}
+                                        <span class="badge bg-primary">New</span>
+                                    {% endif %}
+                                    <a href="{% url 'job-detail' notification.application.job.pk %}" class="btn btn-sm btn-outline-primary ms-2">
+                                        View
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    {% endif %}
 
     <!-- Action Buttons -->
     <div class="mb-4">

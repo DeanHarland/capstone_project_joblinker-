@@ -44,3 +44,16 @@ class Application(models.Model):
     
     def __str__(self):
         return f"{self.applicant.username} - {self.job.title} ({self.status})"
+
+
+class Notification(models.Model):
+    employer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notifications')
+    application = models.ForeignKey(Application, on_delete=models.CASCADE, related_name='notifications')
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        ordering = ['-created_at']
+    
+    def __str__(self):
+        return f"Notification for {self.employer.username} - {self.application.applicant.username} applied"

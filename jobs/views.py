@@ -6,7 +6,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.views import LoginView as DjangoLoginView, LogoutView as DjangoLogoutView
 from django.urls import reverse_lazy
 from django.contrib import messages
-from .models import Job, Application, Profile
+from .models import Job, Application, Profile, Notification
 from .forms import JobForm, ApplicationForm, CustomUserCreationForm
 
 
@@ -78,6 +78,21 @@ class JobDetailView(DetailView):
                 applicant=self.request.user
             ).exists()
         return context
+    
+    def get(self, request, *args, **kwargs):
+        """Mark notifications as read when employer views the job"""
+        response = super().get(request, *args, **kwargs)
+        
+        # If the user is the employer who posted this job, mark their notifications as read
+        if request.user.is_authenticated and self.object.posted_by == request.user:
+            # Mark all unread notifications for applications on this job as read
+            Notification.objects.filter(
+                employer=request.user,
+                application__job=self.object,
+                is_read=False
+            ).update(is_read=True)
+        
+        return response
 
 
 class JobCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
@@ -225,10 +240,16 @@ class EmployerDashboardView(LoginRequiredMixin, View):
         # Get all jobs posted by this employer
         jobs = Job.objects.filter(posted_by=request.user)
         
+        # Get notifications for this employer
+        notifications = Notification.objects.filter(employer=request.user).select_related('application', 'application__applicant', 'application__job')
+        unread_notifications = notifications.filter(is_read=False)
+        
         context = {
             'jobs': jobs,
             'total_jobs': jobs.count(),
             'total_applications': Application.objects.filter(job__posted_by=request.user).count(),
+            'notifications': notifications[:10],  # Show last 10 notifications
+            'unread_notifications_count': unread_notifications.count(),
         }
         return render(request, 'jobs/employer_dashboard.html', context)
 
