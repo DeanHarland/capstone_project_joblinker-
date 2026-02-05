@@ -44,15 +44,11 @@
                         <strong>You have already applied to this job</strong>
                     </div>
                 {% else %}
-                    <form method="post" action="{% url 'application-create' %}">
-                        {% csrf_token %}
-                        <input type="hidden" name="job_id" value="{{ job.pk }}">
-                        <button type="submit" class="btn btn-success btn-lg">Apply Now</button>
-                    </form>
+                    <a href="{% url 'application-create' %}?job_id={{ job.pk }}" class="btn btn-success btn-lg">Apply Now</a>
                 {% endif %}
             {% else %}
                 <div class="alert alert-warning">
-                    <p><a href="{% url 'login' %}">Login</a> to apply for this job</p>
+                    <p><a href="{% url 'login' %}">Login</a> to apply for this job, no account <a href="{% url 'signup' %}">register here</a></p>
                 </div>
             {% endif %}
         </div>

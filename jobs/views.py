@@ -156,9 +156,12 @@ class ApplicationCreateView(LoginRequiredMixin, CreateView):
     
     def get_initial(self):
         initial = super().get_initial()
-        job_id = self.request.POST.get('job_id')
+        job_id = self.request.GET.get('job_id')
         if job_id:
-            initial['job'] = Job.objects.get(pk=job_id)
+            try:
+                initial['job'] = job_id
+            except (ValueError, Job.DoesNotExist):
+                pass
         return initial
     
     def form_valid(self, form):
