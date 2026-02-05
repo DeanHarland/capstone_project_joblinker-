@@ -121,9 +121,14 @@
                                     {% endif %}
                                 </small>
                             </div>
-                            <a href="{% url 'job-detail' application.job.pk %}" class="btn btn-sm btn-outline-primary">
-                                View Job
-                            </a>
+                            <div class="btn-group-vertical" role="group">
+                                <a href="{% url 'job-detail' application.job.pk %}" class="btn btn-sm btn-outline-primary">
+                                    View Job
+                                </a>
+                                <a href="{% url 'application-cancel' application.pk %}" class="btn btn-sm btn-outline-danger">
+                                    Cancel Application
+                                </a>
+                            </div>
                         </div>
                     </div>
                 {% endfor %}

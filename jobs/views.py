@@ -200,6 +200,24 @@ class SignUpView(CreateView):
         return response
 
 
+class ApplicationDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    """View for job seekers to cancel their applications"""
+    model = Application
+    template_name = 'jobs/application_confirm_delete.html'
+    success_url = reverse_lazy('my-applications')
+    login_url = reverse_lazy('login')
+    context_object_name = 'application'
+
+    def test_func(self):
+        """Ensure only the applicant can delete their own application"""
+        application = self.get_object()
+        return application.applicant == self.request.user
+    
+    def delete(self, request, *args, **kwargs):
+        messages.success(self.request, 'Application cancelled successfully!')
+        return super().delete(request, *args, **kwargs)
+
+
 class MyApplicationsView(LoginRequiredMixin, ListView):
     """View for job seekers to see their applications"""
     model = Application

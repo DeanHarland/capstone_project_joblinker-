@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block title %}Cancel Application - JobLinker{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card border-danger">
+                <div class="card-body">
+                    <h3 class="card-title text-danger mb-4">Cancel Application</h3>
+                    
+                    <p class="card-text mb-4">
+                        Are you sure you want to cancel your application for:
+                    </p>
+                    
+                    <div class="alert alert-light" role="alert">
+                        <h5>{{ application.job.title }}</h5>
+                        <p class="mb-2">{{ application.job.company }}</p>
+                        <small class="text-muted">Applied on {{ application.created_at|date:"M d, Y" }}</small>
+                    </div>
+                    
+                    <p class="card-text text-muted mb-4">
+                        This action cannot be undone. You can apply again later if you change your mind.
+                    </p>
+                    
+                    <form method="post" class="d-grid gap-2">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger btn-lg">
+                            Yes, Cancel Application
+                        </button>
+                        <a href="{% url 'my-applications' %}" class="btn btn-secondary btn-lg">
+                            Go Back
+                        </a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
