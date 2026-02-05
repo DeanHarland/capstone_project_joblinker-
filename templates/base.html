@@ -84,8 +84,9 @@
     <!-- Welcome Section -->
     <div class="container mt-2 mb-3">
         {% if user.is_authenticated %}
-            <div class="alert alert-info" role="alert">
+            <div class="alert alert-info alert-dismissible fade show" role="alert">
                 <p class="mb-0">Welcome, <strong>{{ user.username }}</strong> <span class="badge bg-primary">{{ user.profile.role|title }}</span></p>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         {% else %}
             <div class="alert alert-light border" role="alert">
