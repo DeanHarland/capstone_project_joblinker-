@@ -6,6 +6,8 @@ from .models import Job, Application, Profile
 
 class CustomUserCreationForm(UserCreationForm):
     email = forms.EmailField(required=True)
+    first_name = forms.CharField(max_length=30, required=True)
+    last_name = forms.CharField(max_length=150, required=True)
     role = forms.ChoiceField(
         choices=Profile.ROLE_CHOICES,
         widget=forms.RadioSelect,
@@ -14,10 +16,12 @@ class CustomUserCreationForm(UserCreationForm):
     
     class Meta:
         model = User
-        fields = ['username', 'email', 'password1', 'password2', 'role']
+        fields = ['first_name', 'last_name', 'username', 'email', 'password1', 'password2', 'role']
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.fields['first_name'].widget.attrs.update({'class': 'form-control'})
+        self.fields['last_name'].widget.attrs.update({'class': 'form-control'})
         self.fields['username'].widget.attrs.update({'class': 'form-control'})
         self.fields['email'].widget.attrs.update({'class': 'form-control'})
         self.fields['password1'].widget.attrs.update({'class': 'form-control'})
@@ -33,6 +37,8 @@ class CustomUserCreationForm(UserCreationForm):
     def save(self, commit=True):
         user = super().save(commit=False)
         user.email = self.cleaned_data['email']
+        user.first_name = self.cleaned_data['first_name']
+        user.last_name = self.cleaned_data['last_name']
         if commit:
             user.save()
             # Create profile with selected role

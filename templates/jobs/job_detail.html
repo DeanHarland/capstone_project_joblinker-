@@ -46,7 +46,7 @@
                         </div>
                         <a href="{% url 'my-applications' %}" class="btn btn-sm btn-info">View My Applications</a>
                     </div>
-                {% else %}
+                {% elif user.profile.role == 'jobseeker' %}
                     <a href="{% url 'application-create' %}?job_id={{ job.pk }}" 
                        class="btn btn-success btn-lg"
                        onclick="return checkResumeAndApply(event, {{ user.profile.resume|yesno:'true,false' }})">
