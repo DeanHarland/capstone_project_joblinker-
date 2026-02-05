@@ -47,7 +47,11 @@
                         <a href="{% url 'my-applications' %}" class="btn btn-sm btn-info">View My Applications</a>
                     </div>
                 {% else %}
-                    <a href="{% url 'application-create' %}?job_id={{ job.pk }}" class="btn btn-success btn-lg">Apply Now</a>
+                    <a href="{% url 'application-create' %}?job_id={{ job.pk }}" 
+                       class="btn btn-success btn-lg"
+                       onclick="return checkResumeAndApply(event, {{ user.profile.resume|yesno:'true,false' }})">
+                        Apply Now
+                    </a>
                 {% endif %}
             {% else %}
                 <div class="alert alert-warning">
@@ -77,6 +81,10 @@
                             <tr>
                                 <td>{{ application.applicant.username }}</td>
                                 <td>{{ application.created_at|date:"M d, Y g:i A" }}</td>
+                                <td>
+                                    <button class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#applicationModal" 
+                                            onclick="loadApplicationDetails({{ application.pk }})">View Application</button>
+                                </td>
                                 <td>
                                     <span class="badge 
                                         {% if application.status == 'pending' %}bg-warning
@@ -139,4 +147,88 @@
         </div>
     </div>
 </div>
+
+<!-- Application Details Modal -->
+<div class="modal fade" id="applicationModal" tabindex="-1" aria-labelledby="applicationModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="applicationModalLabel">Application Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <p class="text-muted">Loading application details...</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CV Upload Required Modal -->
+<div class="modal fade" id="cvUploadModal" tabindex="-1" aria-labelledby="cvUploadModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-warning">
+                <h5 class="modal-title" id="cvUploadModalLabel">CV/Resume Required</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center mb-3">
+                    <i class="fas fa-file-pdf" style="font-size: 3rem; color: #dc3545;"></i>
+                </div>
+                <p><strong>Please upload your CV/Resume before applying</strong></p>
+                <p class="text-muted">
+                    Employers need to review your CV to consider your application. Go to your profile to upload your resume in PDF, DOC, or DOCX format.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <a href="{% url 'jobseeker-profile' %}" class="btn btn-primary">
+                    <i class="fas fa-user"></i> Go to My Profile
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function loadApplicationDetails(applicationId) {
+    // Fetch the application details
+    fetch(`/application/${applicationId}/view/`)
+        .then(response => response.text())
+        .then(html => {
+            // Extract just the content part (everything after opening body tag)
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            
+            // Get the application details content
+            const contentElement = doc.querySelector('[data-application-content]');
+            const applicationContent = contentElement ? contentElement.innerHTML : doc.body.innerText;
+            
+            document.getElementById('modalBody').innerHTML = applicationContent;
+        })
+        .catch(error => {
+            console.error('Error loading application details:', error);
+            document.getElementById('modalBody').innerHTML = '<p class="text-danger">Error loading application details. Please try again.</p>';
+        });
+}
+
+function checkResumeAndApply(event, hasResume) {
+    // If user has a resume, allow the click to proceed normally
+    if (hasResume) {
+        return true;
+    }
+    
+    // Prevent default link behavior
+    event.preventDefault();
+    
+    // Show the CV upload modal
+    const cvModal = new bootstrap.Modal(document.getElementById('cvUploadModal'), {});
+    cvModal.show();
+    
+    return false;
+}
+</script>
 {% endblock %}

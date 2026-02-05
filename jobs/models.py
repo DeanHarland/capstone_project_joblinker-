@@ -8,6 +8,8 @@ class Profile(models.Model):
     )
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     role = models.CharField(max_length=20, choices=ROLE_CHOICES)
+    cover_letter = models.TextField(blank=True, null=True, help_text="Your cover letter")
+    resume = models.FileField(upload_to='resumes/', blank=True, null=True, help_text="Upload your resume (PDF, DOC, DOCX)")
 
 class Job(models.Model):
     title = models.CharField(max_length=200)

@@ -15,6 +15,7 @@ urlpatterns = [
     path('my-applications/', views.MyApplicationsView.as_view(), name='my-applications'),
     path('application/<int:pk>/cancel/', views.ApplicationDeleteView.as_view(), name='application-cancel'),
     path('application/<int:pk>/update-status/', views.ApplicationStatusUpdateView.as_view(), name='application-status-update'),
+    path('application/<int:pk>/view/', views.ViewApplicationDetailsView.as_view(), name='view-application-details'),
     
     # Authentication URLs
     path('login/', views.CustomLoginView.as_view(), name='login'),
@@ -23,4 +24,7 @@ urlpatterns = [
     
     # Employer URLs
     path('employer/dashboard/', views.EmployerDashboardView.as_view(), name='employer-dashboard'),
+    
+    # Job Seeker URLs
+    path('profile/', views.JobSeekerProfileView.as_view(), name='jobseeker-profile'),
 ]

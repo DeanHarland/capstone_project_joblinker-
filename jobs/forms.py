@@ -130,3 +130,36 @@ class ApplicationStatusForm(forms.ModelForm):
         labels = {
             'status': 'Application Status',
         }
+
+class ProfileForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        fields = ['cover_letter', 'resume']
+        widgets = {
+            'cover_letter': forms.Textarea(attrs={
+                'class': 'form-control',
+                'placeholder': 'Write your cover letter here...',
+                'rows': 8,
+            }),
+            'resume': forms.FileInput(attrs={
+                'class': 'form-control',
+                'accept': '.pdf,.doc,.docx',
+            }),
+        }
+        labels = {
+            'cover_letter': 'Cover Letter',
+            'resume': 'Resume (PDF, DOC, or DOCX)',
+        }
+    
+    def clean_resume(self):
+        resume = self.cleaned_data.get('resume')
+        if resume:
+            # Check file size (max 5MB)
+            if resume.size > 5 * 1024 * 1024:
+                raise forms.ValidationError("Resume file size must not exceed 5MB.")
+            # Check file extension
+            allowed_extensions = ['pdf', 'doc', 'docx']
+            file_extension = resume.name.split('.')[-1].lower()
+            if file_extension not in allowed_extensions:
+                raise forms.ValidationError("Only PDF, DOC, and DOCX files are allowed.")
+        return resume

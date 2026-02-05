@@ -7,7 +7,7 @@ from django.contrib.auth.views import LoginView as DjangoLoginView, LogoutView a
 from django.urls import reverse_lazy
 from django.contrib import messages
 from .models import Job, Application, Profile, Notification
-from .forms import JobForm, ApplicationForm, CustomUserCreationForm
+from .forms import JobForm, ApplicationForm, CustomUserCreationForm, ProfileForm
 
 
 class CustomLoginView(DjangoLoginView):
@@ -185,6 +185,22 @@ class ApplicationCreateView(LoginRequiredMixin, CreateView):
     template_name = 'jobs/application_form.html'
     login_url = reverse_lazy('login')
     
+    def get(self, request, *args, **kwargs):
+        """Check if user has a resume before showing the application form"""
+        try:
+            profile = Profile.objects.get(user=request.user)
+            if not profile.resume:
+                messages.error(
+                    request, 
+                    'Please upload your CV/resume before applying. Go to your profile to add it.'
+                )
+                return redirect('jobseeker-profile')
+        except Profile.DoesNotExist:
+            messages.error(request, 'Profile not found. Please contact support.')
+            return redirect('job-list')
+        
+        return super().get(request, *args, **kwargs)
+    
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         kwargs['user'] = self.request.user
@@ -293,6 +309,50 @@ class ApplicationStatusUpdateView(LoginRequiredMixin, UserPassesTestMixin, View)
         return redirect('job-detail', pk=application.job.pk)
 
 
+class JobSeekerProfileView(LoginRequiredMixin, View):
+    """Profile settings page for job seekers to manage cover letter and resume"""
+    login_url = reverse_lazy('login')
+    
+    def get(self, request):
+        try:
+            profile = Profile.objects.get(user=request.user)
+            if profile.role != 'jobseeker':
+                messages.error(request, 'Only job seekers can access this page.')
+                return redirect('job-list')
+        except Profile.DoesNotExist:
+            messages.error(request, 'Profile not found.')
+            return redirect('job-list')
+        
+        form = ProfileForm(instance=profile)
+        context = {
+            'form': form,
+            'profile': profile,
+        }
+        return render(request, 'jobs/jobseeker_profile.html', context)
+    
+    def post(self, request):
+        try:
+            profile = Profile.objects.get(user=request.user)
+            if profile.role != 'jobseeker':
+                messages.error(request, 'Only job seekers can access this page.')
+                return redirect('job-list')
+        except Profile.DoesNotExist:
+            messages.error(request, 'Profile not found.')
+            return redirect('job-list')
+        
+        form = ProfileForm(request.POST, request.FILES, instance=profile)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Your profile has been updated successfully!')
+            return redirect('jobseeker-profile')
+        
+        context = {
+            'form': form,
+            'profile': profile,
+        }
+        return render(request, 'jobs/jobseeker_profile.html', context)
+
+
 class EmployerDashboardView(LoginRequiredMixin, View):
     """Dashboard for employers to manage their job postings"""
     login_url = reverse_lazy('login')
@@ -322,4 +382,27 @@ class EmployerDashboardView(LoginRequiredMixin, View):
             'unread_notifications_count': unread_notifications.count(),
         }
         return render(request, 'jobs/employer_dashboard.html', context)
+
+
+class ViewApplicationDetailsView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
+    """View for employers to see application details in a modal"""
+    model = Application
+    context_object_name = 'application'
+    template_name = 'jobs/application_detail.html'
+    login_url = reverse_lazy('login')
+    
+    def test_func(self):
+        """Ensure only the employer who posted the job can view application"""
+        application = self.get_object()
+        return application.job.posted_by == self.request.user
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        application = self.get_object()
+        try:
+            applicant_profile = Profile.objects.get(user=application.applicant)
+            context['applicant_profile'] = applicant_profile
+        except Profile.DoesNotExist:
+            context['applicant_profile'] = None
+        return context
 

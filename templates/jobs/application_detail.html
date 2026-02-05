@@ -1,0 +1,89 @@
+<div data-application-content>
+    <!-- Applicant Information Section -->
+    <div class="mb-4">
+        <h6 class="border-bottom pb-2">
+            <strong>Applicant Information</strong>
+        </h6>
+        <div class="row mt-3">
+            <div class="col-md-6">
+                <p><strong>Name:</strong> {{ application.applicant.get_full_name|default:application.applicant.username }}</p>
+            </div>
+            <div class="col-md-6">
+                <p><strong>Email:</strong> {{ application.applicant.email }}</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <p><strong>Applied On:</strong> {{ application.created_at|date:"M d, Y g:i A" }}</p>
+            </div>
+            <div class="col-md-6">
+                <p><strong>Current Status:</strong> <span class="badge 
+                    {% if application.status == 'pending' %}bg-warning
+                    {% elif application.status == 'reviewed' %}bg-info
+                    {% elif application.status == 'accepted' %}bg-success
+                    {% elif application.status == 'rejected' %}bg-danger
+                    {% endif %}">
+                    {{ application.get_status_display }}
+                </span></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cover Letter Section -->
+    <div class="mb-4">
+        <h6 class="border-bottom pb-2">
+            <strong>Cover Letter</strong>
+        </h6>
+        {% if applicant_profile and applicant_profile.cover_letter %}
+            <div class="card bg-light mt-2">
+                <div class="card-body">
+                    <p>{{ applicant_profile.cover_letter|linebreaks }}</p>
+                </div>
+            </div>
+        {% else %}
+            <p class="text-muted mt-2"><em>No cover letter provided</em></p>
+        {% endif %}
+    </div>
+
+    <!-- Resume Section -->
+    <div class="mb-4">
+        <h6 class="border-bottom pb-2">
+            <strong>Resume</strong>
+        </h6>
+        {% if applicant_profile and applicant_profile.resume %}
+            <div class="mt-2">
+                <p><strong>Resume File:</strong></p>
+                <a href="{{ applicant_profile.resume.url }}" class="btn btn-sm btn-primary" download>
+                    <i class="fas fa-download"></i> Download Resume
+                </a>
+                <p class="text-muted small mt-2">{{ applicant_profile.resume.name }}</p>
+            </div>
+        {% else %}
+            <p class="text-muted mt-2"><em>No resume uploaded</em></p>
+        {% endif %}
+    </div>
+
+    <!-- Status Update Section -->
+    <div class="mb-3">
+        <h6 class="border-bottom pb-2">
+            <strong>Update Application Status</strong>
+        </h6>
+        <form method="post" action="{% url 'application-status-update' application.pk %}" class="mt-3">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-md-8">
+                    <select name="status" class="form-select" required>
+                        <option value="">-- Select Status --</option>
+                        <option value="pending" {% if application.status == 'pending' %}selected{% endif %}>Pending</option>
+                        <option value="reviewed" {% if application.status == 'reviewed' %}selected{% endif %}>Reviewed</option>
+                        <option value="accepted" {% if application.status == 'accepted' %}selected{% endif %}>Accepted</option>
+                        <option value="rejected" {% if application.status == 'rejected' %}selected{% endif %}>Rejected</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <button type="submit" class="btn btn-primary w-100">Update Status</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
