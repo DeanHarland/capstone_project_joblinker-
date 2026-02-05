@@ -13,6 +13,12 @@ from .forms import JobForm, ApplicationForm, CustomUserCreationForm
 class CustomLoginView(DjangoLoginView):
     template_name = 'auth/login.html'
     
+    def form_valid(self, form):
+        """Add welcome message on successful login"""
+        response = super().form_valid(form)
+        messages.success(self.request, f'Welcome, {self.request.user.username}!')
+        return response
+    
     def get_success_url(self):
         """Redirect based on user role"""
         user = self.request.user
@@ -29,6 +35,15 @@ class CustomLoginView(DjangoLoginView):
 class CustomLogoutView(DjangoLogoutView):
     next_page = reverse_lazy('job-list')
     http_method_names = ['get', 'post', 'options']
+    
+    def dispatch(self, request, *args, **kwargs):
+        """Capture username before logout and add goodbye message"""
+        if request.user.is_authenticated:
+            username = request.user.username
+            response = super().dispatch(request, *args, **kwargs)
+            messages.info(request, f'Goodbye, {username}!')
+            return response
+        return super().dispatch(request, *args, **kwargs)
 
 
 class JobListView(ListView):

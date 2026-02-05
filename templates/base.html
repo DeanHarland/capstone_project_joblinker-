@@ -70,10 +70,10 @@
     </nav>
 
     <!-- Messages -->
-    <div class="container mt-3">
+    <div class="messages-container" style="position: fixed; top: 80px; right: 20px; z-index: 9999; max-width: 350px;">
         {% if messages %}
             {% for message in messages %}
-                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show shadow-lg" role="alert" data-auto-dismiss="true">
                     {{ message }}
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
@@ -83,12 +83,7 @@
 
     <!-- Welcome Section -->
     <div class="container mt-2 mb-3">
-        {% if user.is_authenticated %}
-            <div class="alert alert-info alert-dismissible fade show" role="alert">
-                <p class="mb-0">Welcome, <strong>{{ user.username }}</strong> <span class="badge bg-primary">{{ user.profile.role|title }}</span></p>
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        {% else %}
+        {% if not user.is_authenticated %}
             <div class="alert alert-light border" role="alert">
                 <p class="mb-0">
                     <a href="{% url 'login' %}" class="btn btn-sm btn-primary">Login</a>
@@ -111,6 +106,18 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Auto-dismiss messages after 5 seconds
+        document.addEventListener('DOMContentLoaded', function() {
+            const alerts = document.querySelectorAll('[data-auto-dismiss="true"]');
+            alerts.forEach(function(alert) {
+                setTimeout(function() {
+                    const bsAlert = bootstrap.Alert.getOrCreateInstance(alert);
+                    bsAlert.close();
+                }, 5000);
+            });
+        });
+    </script>
     {% block extra_js %}{% endblock %}
 </body>
 </html>
