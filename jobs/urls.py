@@ -14,6 +14,7 @@ urlpatterns = [
     path('apply/', views.ApplicationCreateView.as_view(), name='application-create'),
     path('my-applications/', views.MyApplicationsView.as_view(), name='my-applications'),
     path('application/<int:pk>/cancel/', views.ApplicationDeleteView.as_view(), name='application-cancel'),
+    path('application/<int:pk>/update-status/', views.ApplicationStatusUpdateView.as_view(), name='application-status-update'),
     
     # Authentication URLs
     path('login/', views.CustomLoginView.as_view(), name='login'),

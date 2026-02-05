@@ -92,6 +92,12 @@ class JobDetailView(DetailView):
                 job=self.object,
                 applicant=self.request.user
             ).exists()
+            
+            # If the user is the employer who posted this job, include applications
+            if self.object.posted_by == self.request.user:
+                context['applications'] = Application.objects.filter(
+                    job=self.object
+                ).select_related('applicant', 'applicant__profile')
         return context
     
     def get(self, request, *args, **kwargs):
@@ -254,6 +260,37 @@ class MyApplicationsView(LoginRequiredMixin, ListView):
         context['accepted_count'] = applications.filter(status='accepted').count()
         context['rejected_count'] = applications.filter(status='rejected').count()
         return context
+
+
+class ApplicationStatusUpdateView(LoginRequiredMixin, UserPassesTestMixin, View):
+    """View for employers to update application status"""
+    login_url = reverse_lazy('login')
+    
+    def test_func(self):
+        """Ensure only the employer who posted the job can update application status"""
+        application = Application.objects.get(pk=self.kwargs['pk'])
+        return application.job.posted_by == self.request.user
+    
+    def post(self, request, pk):
+        application = Application.objects.get(pk=pk)
+        new_status = request.POST.get('status')
+        
+        # Check if a status was selected
+        if not new_status:
+            messages.error(request, 'Please select a status before confirming.')
+            return redirect('job-detail', pk=application.job.pk)
+        
+        # Validate the status
+        valid_statuses = ['pending', 'reviewed', 'accepted', 'rejected']
+        if new_status in valid_statuses:
+            application.status = new_status
+            application.save()
+            messages.success(request, f'Application status updated to {application.get_status_display()}.')
+        else:
+            messages.error(request, 'Invalid status selected.')
+        
+        # Redirect back to the job detail page
+        return redirect('job-detail', pk=application.job.pk)
 
 
 class EmployerDashboardView(LoginRequiredMixin, View):

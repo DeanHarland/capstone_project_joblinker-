@@ -55,6 +55,70 @@
                 </div>
             {% endif %}
         </div>
+
+        {% if user.is_authenticated and job.posted_by == user and applications %}
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Applications ({{ applications|length }})</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Applicant</th>
+                                <th>Applied On</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for application in applications %}
+                            <tr>
+                                <td>{{ application.applicant.username }}</td>
+                                <td>{{ application.created_at|date:"M d, Y g:i A" }}</td>
+                                <td>
+                                    <span class="badge 
+                                        {% if application.status == 'pending' %}bg-warning
+                                        {% elif application.status == 'reviewed' %}bg-info
+                                        {% elif application.status == 'accepted' %}bg-success
+                                        {% elif application.status == 'rejected' %}bg-danger
+                                        {% endif %}">
+                                        {{ application.get_status_display }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <form method="post" action="{% url 'application-status-update' application.pk %}" class="d-inline">
+                                        {% csrf_token %}
+                                        <div class="d-flex align-items-center gap-2">
+                                            <select name="status" class="form-select form-select-sm" style="width: auto;">
+                                                <option value="">-----</option>
+                                                <option value="pending" {% if application.status == 'pending' %}selected{% endif %}>Pending</option>
+                                                <option value="reviewed" {% if application.status == 'reviewed' %}selected{% endif %}>Reviewed</option>
+                                                <option value="accepted" {% if application.status == 'accepted' %}selected{% endif %}>Accepted</option>
+                                                <option value="rejected" {% if application.status == 'rejected' %}selected{% endif %}>Rejected</option>
+                                            </select>
+                                            <button type="submit" class="btn btn-sm btn-primary">Confirm</button>
+                                        </div>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        {% elif user.is_authenticated and job.posted_by == user %}
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Applications</h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted">No applications yet for this job.</p>
+            </div>
+        </div>
+        {% endif %}
     </div>
 
     <div class="col-md-4">
@@ -64,7 +128,9 @@
             </div>
             <div class="card-body">
                 <a href="{% url 'job-list' %}" class="btn btn-secondary d-block mb-2">Back to Jobs</a>
-                <a href="{% url 'employer-dashboard' %}" class="btn btn-secondary d-block mb-2">Back to Dashboard</a>
+                {% if user.is_authenticated and user.profile.role == 'employer' %}
+                    <a href="{% url 'employer-dashboard' %}" class="btn btn-secondary d-block mb-2">Back to Dashboard</a>
+                {% endif %}
                 {% if user.is_authenticated and job.posted_by == user %}
                     <a href="{% url 'job-update' job.pk %}" class="btn btn-warning d-block mb-2">Edit Job</a>
                     <a href="{% url 'job-delete' job.pk %}" class="btn btn-danger d-block">Delete Job</a>
