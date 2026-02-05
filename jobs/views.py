@@ -8,17 +8,7 @@ from django.urls import reverse_lazy
 from django.contrib import messages
 from .models import Job, Application, Profile
 from .forms import JobForm, ApplicationForm, CustomUserCreationForm
-from django.contrib import messages
 
-class JobCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
-    model = Job
-    form_class = JobForm
-    template_name = "jobs/job_form.html"
-    success_url = reverse_lazy('job-list')
-
-    def form_valid(self, form):
-        messages.success(self.request, "Job created successfully!")
-        return super().form_valid(form)
 
 class CustomLoginView(DjangoLoginView):
     template_name = 'auth/login.html'
@@ -38,6 +28,7 @@ class CustomLoginView(DjangoLoginView):
 
 class CustomLogoutView(DjangoLogoutView):
     next_page = reverse_lazy('job-list')
+    http_method_names = ['get', 'post', 'options']
 
 
 class JobListView(ListView):

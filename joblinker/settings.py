@@ -29,7 +29,7 @@ DEBUG = os.getenv("DEBUG") == "True"
 
 
 
-ALLOWED_HOSTS = ['joblinker-32ea19931b20.herokuapp.com']
+ALLOWED_HOSTS = ['joblinker-32ea19931b20.herokuapp.com', '127.0.0.1' ]
 
 
 # Application definition
