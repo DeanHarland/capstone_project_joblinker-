@@ -21,7 +21,12 @@
             <div class="col-md-6 mb-4">
                 <div class="card h-100">
                     <div class="card-body">
-                        <h5 class="card-title">{{ job.title }}</h5>
+                        <div class="d-flex justify-content-between align-items-start">
+                            <h5 class="card-title">{{ job.title }}</h5>
+                            {% if job.id in applied_job_ids %}
+                                <span class="badge bg-success">Applied</span>
+                            {% endif %}
+                        </div>
                         <h6 class="card-subtitle mb-2 text-muted">{{ job.company }}</h6>
                         <p class="card-text">{{ job.description|truncatewords:20 }}</p>
                         <div class="mb-2">
