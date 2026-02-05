@@ -1,0 +1,196 @@
+{% extends 'base.html' %}
+
+{% block title %}My Applications - JobLinker{% endblock %}
+
+{% block extra_css %}
+<style>
+    .stats-card {
+        border-left: 4px solid #007bff;
+    }
+    .stats-card.pending {
+        border-left-color: #ffc107;
+    }
+    .stats-card.reviewed {
+        border-left-color: #0dcaf0;
+    }
+    .stats-card.accepted {
+        border-left-color: #198754;
+    }
+    .stats-card.rejected {
+        border-left-color: #dc3545;
+    }
+    .status-badge {
+        display: inline-block;
+    }
+    .application-card {
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        transition: box-shadow 0.2s;
+    }
+    .application-card:hover {
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .job-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+    .company-name {
+        color: #6c757d;
+        font-size: 0.95rem;
+        margin-bottom: 0.5rem;
+    }
+    .application-meta {
+        font-size: 0.85rem;
+        color: #6c757d;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="mb-4">My Applications</h1>
+    
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card stats-card">
+                <div class="card-body">
+                    <p class="card-text text-muted mb-2">Total Applications</p>
+                    <h3 class="card-title">{{ total_applications }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card stats-card pending">
+                <div class="card-body">
+                    <p class="card-text text-muted mb-2">Pending</p>
+                    <h3 class="card-title">{{ pending_count }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card stats-card reviewed">
+                <div class="card-body">
+                    <p class="card-text text-muted mb-2">Reviewed</p>
+                    <h3 class="card-title">{{ reviewed_count }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card stats-card accepted">
+                <div class="card-body">
+                    <p class="card-text text-muted mb-2">Accepted</p>
+                    <h3 class="card-title">{{ accepted_count }}</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Applications List -->
+    {% if applications %}
+        <div class="row">
+            <div class="col-lg-8">
+                {% for application in applications %}
+                    <div class="application-card">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div class="flex-grow-1">
+                                <h3 class="job-title">
+                                    <a href="{% url 'job-detail' application.job.pk %}" class="text-decoration-none">
+                                        {{ application.job.title }}
+                                    </a>
+                                </h3>
+                                <div class="company-name">{{ application.job.company }}</div>
+                            </div>
+                            <span class="badge bg-{% if application.status == 'pending' %}warning{% elif application.status == 'reviewed' %}info{% elif application.status == 'accepted' %}success{% else %}danger{% endif %} status-badge">
+                                {{ application.get_status_display }}
+                            </span>
+                        </div>
+                        
+                        <p class="card-text mb-3">{{ application.job.description|truncatewords:30 }}</p>
+                        
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="application-meta">
+                                <small>
+                                    <strong>Location:</strong> {{ application.job.location }}<br>
+                                    <strong>Applied:</strong> {{ application.created_at|date:"M d, Y" }}<br>
+                                    {% if application.job.salary %}
+                                    <strong>Salary:</strong> ${{ application.job.salary|floatformat:0 }}/year
+                                    {% endif %}
+                                </small>
+                            </div>
+                            <a href="{% url 'job-detail' application.job.pk %}" class="btn btn-sm btn-outline-primary">
+                                View Job
+                            </a>
+                        </div>
+                    </div>
+                {% endfor %}
+
+                <!-- Pagination -->
+                {% if is_paginated %}
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination justify-content-center">
+                            {% if page_obj.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page=1">First</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                                </li>
+                            {% endif %}
+
+                            {% for num in page_obj.paginator.page_range %}
+                                {% if page_obj.number == num %}
+                                    <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                                {% else %}
+                                    <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+                                {% endif %}
+                            {% endfor %}
+
+                            {% if page_obj.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                {% endif %}
+            </div>
+
+            <!-- Sidebar -->
+            <div class="col-lg-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Application Tips</h5>
+                        <ul class="small">
+                            <li>Keep track of your application status here</li>
+                            <li>Employers will update your application status as they review</li>
+                            <li>You can apply to multiple jobs - the more you apply, the better your chances!</li>
+                            <li>Check back regularly for updates</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card mt-3">
+                    <div class="card-body">
+                        <h5 class="card-title">Browse More Jobs</h5>
+                        <p class="small mb-3">Haven't found the right job yet? Check out our full job listing.</p>
+                        <a href="{% url 'job-list' %}" class="btn btn-primary btn-sm w-100">View All Jobs</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="alert alert-info" role="alert">
+            <h4 class="alert-heading">No Applications Yet</h4>
+            <p>You haven't applied to any jobs yet. Start by browsing available positions and submitting your applications.</p>
+            <hr>
+            <a href="{% url 'job-list' %}" class="btn btn-primary">Browse Jobs</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

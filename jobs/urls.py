@@ -12,6 +12,7 @@ urlpatterns = [
     
     # Application URLs
     path('apply/', views.ApplicationCreateView.as_view(), name='application-create'),
+    path('my-applications/', views.MyApplicationsView.as_view(), name='my-applications'),
     
     # Authentication URLs
     path('login/', views.CustomLoginView.as_view(), name='login'),

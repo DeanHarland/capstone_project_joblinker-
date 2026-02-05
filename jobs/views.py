@@ -182,6 +182,29 @@ class SignUpView(CreateView):
         return response
 
 
+class MyApplicationsView(LoginRequiredMixin, ListView):
+    """View for job seekers to see their applications"""
+    model = Application
+    template_name = 'jobs/my_applications.html'
+    context_object_name = 'applications'
+    login_url = reverse_lazy('login')
+    paginate_by = 10
+    
+    def get_queryset(self):
+        return Application.objects.filter(applicant=self.request.user).select_related('job', 'job__posted_by')
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Add summary statistics
+        applications = self.get_queryset()
+        context['total_applications'] = applications.count()
+        context['pending_count'] = applications.filter(status='pending').count()
+        context['reviewed_count'] = applications.filter(status='reviewed').count()
+        context['accepted_count'] = applications.filter(status='accepted').count()
+        context['rejected_count'] = applications.filter(status='rejected').count()
+        return context
+
+
 class EmployerDashboardView(LoginRequiredMixin, View):
     """Dashboard for employers to manage their job postings"""
     login_url = reverse_lazy('login')
@@ -205,17 +228,4 @@ class EmployerDashboardView(LoginRequiredMixin, View):
             'total_applications': Application.objects.filter(job__posted_by=request.user).count(),
         }
         return render(request, 'jobs/employer_dashboard.html', context)
-
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        # Get IDs of jobs the user has applied to
-        if self.request.user.is_authenticated:
-            applied_job_ids = Application.objects.filter(
-                applicant=self.request.user
-            ).values_list('job_id', flat=True)
-            context['applied_job_ids'] = set(applied_job_ids)
-        else:
-            context['applied_job_ids'] = set()
-        return context
 
