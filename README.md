@@ -180,3 +180,94 @@ Django unit tests were implemented to test:
 Tests were run using:
 ```bash
 python manage.py test
+```
+
+### JavaScript Testing (LO4.2)
+
+Minimal custom JavaScript was used in this project. Bootstrap JavaScript components were utilised for UI behaviour. As no custom JavaScript logic was implemented, no separate JavaScript test suite was required.
+
+---
+
+## Version Control & Secure Code Management (LO5)
+
+### Git & GitHub Usage
+- Git used consistently throughout development
+- Clear, descriptive commit messages aligned with features and fixes
+- Logical commit frequency reflecting incremental progress
+- Full development history visible in the GitHub repository
+
+### Secure Code Management
+- `.gitignore` used to prevent sensitive files from being committed
+- All secret keys and credentials managed via environment variables
+- No passwords, tokens, or API keys stored in the repository
+
+---
+
+## Deployment (LO6)
+
+### Hosting
+- Application deployed on **Heroku**
+- **PostgreSQL database** provided by Code Institute
+
+### Deployment Steps
+1. Configure environment variables on Heroku
+2. Set `DEBUG=False`
+3. Configure `ALLOWED_HOSTS`
+4. Add `Procfile` and `runtime.txt`
+5. Push code to Heroku
+6. Run database migrations
+7. Collect static files
+
+### Security
+- No sensitive data committed to the repository
+- Environment variables used for all secret keys and configurations
+- Production settings correctly configured
+
+---
+
+## AI-Assisted Development (LO8)
+
+### Tools Used
+- ChatGPT
+- GitHub Copilot
+
+### AI Usage
+AI tools were used throughout the development process to:
+- Plan project structure and Agile workflow
+- Generate boilerplate Django code
+- Debug configuration, logic, and deployment issues
+- Improve code clarity, performance, and structure
+- Assist with creating automated tests
+- Optimise development efficiency
+
+All AI-generated output was reviewed, adapted, and fully understood by the developer before inclusion.
+
+---
+
+## Technologies Used
+
+- Python
+- Django
+- PostgreSQL
+- HTML5
+- CSS3
+- Bootstrap
+- Git & GitHub
+- Heroku
+- ChatGPT
+- GitHub Copilot
+
+---
+
+## Future Improvements
+
+- Job filtering and search functionality for job seekers
+- Email notifications for job applications and status changes
+- Pagination for large job listings
+- Enhanced user profile features
+
+---
+
+## Acknowledgements
+
+This project was completed as part of the **Code Institute AI-Augmented Full-Stack Bootcamp** and demonstrates the integration of modern full-stack development practices with AI-assisted workflows.
