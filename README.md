@@ -24,6 +24,29 @@ This project was developed as an individual Full-Stack Capstone Project for the 
 
 ---
 
+# Live Application Preview
+*Figure 1: JobLinker homepage showing job listings and navigation.*
+<details>
+<summary> Click to view screenshot </summary>
+
+![JobLinker Homepage](./assets/images/homepage.png)
+</details>
+
+*Figure 2: JobLinker Employer dashboard showing job postings and notifications.*
+<details>
+<summary> Click to view screenshot </summary>
+
+![JobLinker Employer Dashboard](./assets/images/employerdashboard.png)
+</details>
+
+*Figure 3: JobLinker Jobseeker dashboard showing job applications.*
+<details>
+<summary> Click to view screenshot </summary>
+
+![JobLinker Jobseeker Dashboard](./assets/images/jobseekerdashboard.png)
+</details>
+
+
 # Project Purpose
 
 The purpose of JobLinker is to:
@@ -106,6 +129,18 @@ Wireframes were created during initial planning and refined iteratively througho
 - Prominent action buttons
 - Minimal cognitive load
 - Distinct dashboards per role
+
+*Figure 4: JobLinker wireframe*
+<details> 
+<summary>Click to view screenshot </summary>
+
+![WIREFRAME](./assets/images/wireframe.png)
+</details>
+
+
+
+
+
 
 ---
 
