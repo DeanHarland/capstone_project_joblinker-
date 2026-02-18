@@ -3,22 +3,23 @@
 {% block title %}Jobs - JobLinker{% endblock %}
 
 {% block content %}
-<div class="row mb-4">
-    <div class="col-md-8">
-        <h1>Browse Jobs</h1>
+<div class="row g-3 mb-4 align-items-end">
+    <div class="col-lg-8">
+        <h1 class="section-title">Browse Jobs</h1>
+        <p class="section-subtitle mb-0">Find opportunities that match your skills and goals.</p>
     </div>
-    <div class="col-md-4">
+    <div class="col-lg-4">
         <form method="get" class="input-group">
-            <input type="text" name="search" class="form-control" placeholder="Search jobs..." value="{{ request.GET.search }}">
+            <input type="text" name="search" class="form-control" placeholder="Search by title, company, or location" value="{{ request.GET.search }}">
             <button type="submit" class="btn btn-primary">Search</button>
         </form>
     </div>
 </div>
 
 {% if jobs %}
-    <div class="row">
+    <div class="row g-4">
         {% for job in jobs %}
-            <div class="col-md-6 mb-4">
+            <div class="col-md-6">
                 <div class="card h-100">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-start">
@@ -27,9 +28,9 @@
                                 <span class="badge bg-success">Applied</span>
                             {% endif %}
                         </div>
-                        <h6 class="card-subtitle mb-2 text-muted">{{ job.company }}</h6>
+                        <h6 class="card-subtitle mb-3 text-muted">{{ job.company }}</h6>
                         <p class="card-text">{{ job.description|truncatewords:20 }}</p>
-                        <div class="mb-2">
+                        <div class="mb-1">
                             <small class="text-muted">
                                 <strong>Location:</strong> {{ job.location }}
                             </small>
@@ -43,7 +44,7 @@
                         {% endif %}
                         <small class="text-muted">Posted {{ job.created_at|date:"M d, Y" }}</small>
                     </div>
-                    <div class="card-footer bg-white">
+                    <div class="card-footer d-flex gap-2 flex-wrap">
                         <a href="{% url 'job-detail' job.pk %}" class="btn btn-primary btn-sm">View Details</a>
                         {% if user.is_authenticated and job.posted_by == user %}
                             <a href="{% url 'job-update' job.pk %}" class="btn btn-warning btn-sm">Edit</a>
@@ -90,9 +91,9 @@
         </ul>
     </nav>
 {% else %}
-    <div class="alert alert-info text-center">
-        <h5>No jobs found</h5>
-        <p>Try adjusting your search or check back later for new opportunities.</p>
+    <div class="card text-center p-4">
+        <h5 class="mb-2">No jobs found</h5>
+        <p class="text-muted mb-0">Try adjusting your search or check back later for new opportunities.</p>
     </div>
 {% endif %}
 {% endblock %}

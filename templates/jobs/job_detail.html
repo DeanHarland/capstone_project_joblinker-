@@ -5,8 +5,8 @@
 {% block content %}
 <div class="row">
     <div class="col-md-8">
-        <h1>{{ job.title }}</h1>
-        <h4 class="text-muted">{{ job.company }}</h4>
+        <h1 class="section-title">{{ job.title }}</h1>
+        <h4 class="text-muted mb-4">{{ job.company }}</h4>
         
         <div class="card mb-4">
             <div class="card-body">
@@ -30,7 +30,7 @@
 
         <div class="card mb-4">
             <div class="card-header">
-                <h5>Job Description</h5>
+                <h5 class="mb-0">Job Description</h5>
             </div>
             <div class="card-body">
                 <p>{{ job.description|linebreaks }}</p>
@@ -48,8 +48,8 @@
                     </div>
                 {% elif user.profile.role == 'jobseeker' %}
                     <a href="{% url 'application-create' %}?job_id={{ job.pk }}" 
-                       class="btn btn-success btn-lg"
-                       onclick="return checkResumeAndApply(event, {{ user.profile.resume|yesno:'true,false' }})">
+                       class="btn btn-success js-apply-btn"
+                       data-has-resume="{{ user.profile.resume|yesno:'true,false' }}">
                         Apply Now
                     </a>
                 {% endif %}
@@ -72,8 +72,9 @@
                             <tr>
                                 <th>Applicant</th>
                                 <th>Applied On</th>
+                                <th>Review</th>
                                 <th>Status</th>
-                                <th>Action</th>
+                                <th>Update</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -83,7 +84,7 @@
                                 <td>{{ application.created_at|date:"M d, Y g:i A" }}</td>
                                 <td>
                                     <button class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#applicationModal" 
-                                            onclick="loadApplicationDetails({{ application.pk }})">View Application</button>
+                                            onclick="loadApplicationDetails(this.dataset.applicationId)" data-application-id="{{ application.pk }}">View Application</button>
                                 </td>
                                 <td>
                                     <span class="badge 
@@ -175,9 +176,6 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <div class="text-center mb-3">
-                    <i class="fas fa-file-pdf" style="font-size: 3rem; color: #dc3545;"></i>
-                </div>
                 <p><strong>Please upload your CV/Resume before applying</strong></p>
                 <p class="text-muted">
                     Employers need to review your CV to consider your application. Go to your profile to upload your resume in PDF, DOC, or DOCX format.
@@ -185,9 +183,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <a href="{% url 'jobseeker-profile' %}" class="btn btn-primary">
-                    <i class="fas fa-user"></i> Go to My Profile
-                </a>
+                <a href="{% url 'jobseeker-profile' %}" class="btn btn-primary">Go to My Profile</a>
             </div>
         </div>
     </div>
@@ -230,5 +226,19 @@ function checkResumeAndApply(event, hasResume) {
     
     return false;
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    const applyButton = document.querySelector('.js-apply-btn');
+    if (!applyButton) {
+        return;
+    }
+
+    applyButton.addEventListener('click', function(event) {
+        const hasResume = this.dataset.hasResume === 'true';
+        if (!checkResumeAndApply(event, hasResume)) {
+            return false;
+        }
+    });
+});
 </script>
 {% endblock %}

@@ -3,11 +3,11 @@
 {% block title %}Sign Up - JobLinker{% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col-md-6 offset-md-3">
-        <div class="card">
+<div class="row justify-content-center">
+    <div class="col-md-7 col-lg-6">
+        <div class="card app-card">
             <div class="card-header">
-                <h4>Create Account</h4>
+                <h4 class="mb-0">Create Account</h4>
             </div>
             <div class="card-body">
                 <form method="post">
@@ -93,11 +93,11 @@
                             {{ form.non_field_errors }}
                         </div>
                     {% endif %}
-                    <button type="submit" class="btn btn-primary">Sign Up</button>
+                    <button type="submit" class="btn btn-primary w-100">Sign Up</button>
                 </form>
             </div>
             <div class="card-footer">
-                <p>Already have an account? <a href="{% url 'login' %}">Login here</a></p>
+                <p class="mb-0 text-muted">Already have an account? <a href="{% url 'login' %}">Login here</a></p>
             </div>
         </div>
     </div>
