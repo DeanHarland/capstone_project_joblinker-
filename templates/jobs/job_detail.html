@@ -30,7 +30,7 @@
 
         <div class="card mb-4">
             <div class="card-header">
-                <h5 class="mb-0">Job Description</h5>
+                <h2 class="h5 mb-0">Job Description</h2>
             </div>
             <div class="card-body">
                 {{ job.description|linebreaks }}
@@ -63,7 +63,7 @@
         {% if user.is_authenticated and job.posted_by == user and applications %}
         <div class="card mb-4">
             <div class="card-header bg-primary text-white">
-                <h5 class="mb-0">Applications ({{ applications|length }})</h5>
+                <h2 class="h5 mb-0">Applications ({{ applications|length }})</h2>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
@@ -121,7 +121,7 @@
         {% elif user.is_authenticated and job.posted_by == user %}
         <div class="card mb-4">
             <div class="card-header bg-primary text-white">
-                <h5 class="mb-0">Applications</h5>
+                <h2 class="h5 mb-0">Applications</h2>
             </div>
             <div class="card-body">
                 <p class="text-muted">No applications yet for this job.</p>
@@ -133,7 +133,7 @@
     <div class="col-md-4">
         <div class="card">
             <div class="card-header">
-                <h5>Job Actions</h5>
+                <h2 class="h5 mb-0">Job Actions</h2>
             </div>
             <div class="card-body">
                 <a href="{% url 'job-list' %}" class="btn btn-secondary d-block mb-2">Back to Jobs</a>

@@ -287,15 +287,60 @@ Manual testing covered:
 
 | Feature | Expected Result | Status |
 |----------|----------------|--------|
+| User logs in | User logs in | Pass |
+| Login state awareness | User's name displayed in header | Pass |
+| Role-based permissions | Access/ability restricted appropriately | Pass |
 | Employer creates job | Job saved and displayed | Pass |
+| Employer edits job | Job changes saved and displayed | Pass |
+| Employer deletes job | Job deleted and removed | Pass |
 | Job seeker applies | Application recorded | Pass |
 | Unauthorized edit attempt | Access denied | Pass |
 
----
+Manual testing was also done by 2 peer reviewers.
 
 ## JavaScript Testing
 
 Minimal custom JavaScript was used. Bootstrap components provide UI behaviour. As no custom JS logic was implemented, separate JS testing was not required.
+
+---
+
+# Validators
+
+## HTML Validation
+
+All HTML templates were tested using the W3C Markup Validation Service.
+
+- Initial minor syntax issues were identified and corrected.
+- Final validation returned **zero errors or warnings**.
+- Semantic HTML elements were used consistently to improve accessibility, structure, and maintainability.
+
+This ensures compliance with modern web standards and satisfies LO1.1 Front-End Design requirements.
+
+---
+
+## Lighthouse Testing
+
+The deployed application was tested using Google Lighthouse via Chrome DevTools.
+
+Final scores:
+
+- **Performance:** 96  
+- **Accessibility:** 100  
+- **Best Practices:** 100  
+- **SEO:** 90  
+
+No major accessibility issues were detected.
+
+---
+
+## Accessibility Considerations
+
+- All form inputs include associated `<label>` elements.
+- Navigation is fully keyboard accessible.
+- Bootstrap’s accessible components were used throughout.
+- Colour contrast aligns with WCAG standards.
+- Responsive design was tested across mobile, tablet, and desktop screen sizes.
+
 
 ---
 
@@ -370,6 +415,18 @@ GitHub Copilot assisted in generating unit tests, which were reviewed and refine
 AI suggestions improved code clarity and development efficiency.
 
 All AI-generated content was reviewed, adapted, and fully understood before integration.
+
+## AI Reflection
+
+AI tools were used strategically throughout the development of JobLinker to improve workflow efficiency and support decision-making.
+
+Initially, ChatGPT assisted in selecting an appropriate project idea, generating a project brief, and creating structured user stories aligned with the marking rubric. These artefacts were then used to guide development planning. 
+
+Using the user stories and rubric, ChatGPT helped create a detailed step-by-step development plan. This plan was incorporated into GitHub Copilot, which assisted in generating boilerplate Django code, forms, and views, as well as providing suggestions during iterative feature development.
+
+After building the base version of the site, GitHub Copilot supported refinement of functionality, including the implementation of a fully functional job seeker workflow. AI contributions were reviewed and adapted to ensure code quality, security, and alignment with project requirements.
+
+Overall, AI tools enhanced productivity, provided structured guidance, and facilitated efficient iteration without replacing manual decision-making or understanding of the codebase.
 
 ---
 
