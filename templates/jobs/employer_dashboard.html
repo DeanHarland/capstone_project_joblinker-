@@ -12,7 +12,7 @@
         <div class="col-lg-3 col-md-4">
             <div class="card text-center h-100">
                 <div class="card-body">
-                    <h5 class="card-title">Active Jobs</h5>
+                    <p class="h5 card-title">Active Jobs</p>
                     <h2 class="text-primary">{{ total_jobs }}</h2>
                 </div>
             </div>
@@ -20,7 +20,7 @@
         <div class="col-lg-3 col-md-4">
             <div class="card text-center h-100">
                 <div class="card-body">
-                    <h5 class="card-title">Applications</h5>
+                    <p class="h5 card-title">Applications</p>
                     <h2 class="text-success">{{ total_applications }}</h2>
                 </div>
             </div>
@@ -28,7 +28,7 @@
         <div class="col-lg-3 col-md-4">
             <div class="card text-center h-100">
                 <div class="card-body">
-                    <h5 class="card-title">New Notifications</h5>
+                    <p class="h5 card-title">New Notifications</p>
                     <h2 class="text-warning">
                         {{ unread_notifications_count }}
                         {% if unread_notifications_count > 0 %}
@@ -52,7 +52,7 @@
     {% if notifications %}
         <div class="card mb-4">
             <div class="card-header bg-light">
-                <h5 class="mb-0">Recent Notifications</h5>
+                <p class="h5 mb-0">Recent Notifications</p>
             </div>
             <div class="card-body">
                 <div class="list-group">
@@ -60,7 +60,7 @@
                         <div class="list-group-item {% if not notification.is_read %}list-group-item-light{% endif %}">
                             <div class="d-flex w-100 justify-content-between align-items-center">
                                 <div class="flex-grow-1">
-                                    <h6 class="mb-1"><strong>{{ notification.application.applicant.first_name }} {{ notification.application.applicant.last_name }}</strong> applied for <strong>{{ notification.application.job.title }}</strong></h6>
+                                    <p class="h6 mb-1"><strong>{{ notification.application.applicant.first_name }} {{ notification.application.applicant.last_name }}</strong> applied for <strong>{{ notification.application.job.title }}</strong></p>
                                     <small class="text-muted">{{ notification.created_at|date:"M d, Y \a\t g:i A" }}</small>
                                 </div>
                                 <div>

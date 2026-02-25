@@ -6,7 +6,7 @@
 <div class="row">
     <div class="col-md-8">
         <h1 class="section-title">{{ job.title }}</h1>
-        <h4 class="text-muted mb-4">{{ job.company }}</h4>
+        <p class="text-muted mb-4 h4">{{ job.company }}</p>
         
         <div class="card mb-4">
             <div class="card-body">
@@ -33,7 +33,7 @@
                 <h5 class="mb-0">Job Description</h5>
             </div>
             <div class="card-body">
-                <p>{{ job.description|linebreaks }}</p>
+                {{ job.description|linebreaks }}
             </div>
         </div>
 
@@ -150,7 +150,7 @@
 </div>
 
 <!-- Application Details Modal -->
-<div class="modal fade" id="applicationModal" tabindex="-1" aria-labelledby="applicationModalLabel" aria-hidden="true">
+<div class="modal fade" id="applicationModal" tabindex="-1" role="dialog" aria-label="Application Details" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
@@ -168,7 +168,7 @@
 </div>
 
 <!-- CV Upload Required Modal -->
-<div class="modal fade" id="cvUploadModal" tabindex="-1" aria-labelledby="cvUploadModalLabel" aria-hidden="true">
+<div class="modal fade" id="cvUploadModal" tabindex="-1" role="dialog" aria-label="CV/Resume Required" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header bg-warning">

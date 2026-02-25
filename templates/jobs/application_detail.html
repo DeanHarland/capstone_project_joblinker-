@@ -37,7 +37,7 @@
         {% if applicant_profile and applicant_profile.cover_letter %}
             <div class="card bg-light mt-2">
                 <div class="card-body">
-                    <p>{{ applicant_profile.cover_letter|linebreaks }}</p>
+                    {{ applicant_profile.cover_letter|linebreaks }}
                 </div>
             </div>
         {% else %}
