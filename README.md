@@ -2,7 +2,7 @@
 
 **Live Site:** https://joblinker-32ea19931b20.herokuapp.com/  
 **Repository:** https://github.com/DeanHarland/capstone_project_joblinker-
-
+**Project Board** https://github.com/users/DeanHarland/projects/10 
 ---
 
 # Project Overview
